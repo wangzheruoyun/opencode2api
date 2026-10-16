@@ -325,18 +325,6 @@ private fun AttemptCard(attempt: JsonObject) {
     }
 }
 
-@Composable
-private fun NumberField(label: String, value: Int, onChange: (Int) -> Unit) {
-    O2ATextField(
-        value = value.toString(),
-        onValueChange = { input ->
-            input.trim().toIntOrNull()?.let(onChange)
-        },
-        label = label,
-        keyboardType = KeyboardType.Number,
-    )
-}
-
 /** The editable half of one rotation group. */
 private data class GroupDraft(
     val id: String,

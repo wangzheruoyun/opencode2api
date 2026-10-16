@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -37,9 +38,9 @@ enum class O2ATextStyle { Title, Subtitle, Body, Caption, Monospace }
 /** One entry in [O2ANavigationBar]. */
 data class O2ANavItem(val label: String, val icon: ImageVector)
 
-/** Signature every positional argument of the component set follows. */
-private inline val isMiuix: Boolean
-    @Composable get() = LocalUiMode.current == UiMode.Miuix
+/** Which skin the component set is drawing with, read once per component. */
+private val isMiuix: Boolean
+    @Composable @ReadOnlyComposable get() = LocalUiMode.current == UiMode.Miuix
 
 @Composable
 fun O2AScaffold(

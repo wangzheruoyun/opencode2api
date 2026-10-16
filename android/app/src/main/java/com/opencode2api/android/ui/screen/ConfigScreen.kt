@@ -386,26 +386,6 @@ private fun KeyList(
     }
 }
 
-/** A number that is edited as text but stored as a number. */
-@Composable
-private fun NumberField(label: String, value: Int, onChange: (Int) -> Unit) {
-    var text by remember(value) { mutableStateOf(value.toString()) }
-    O2ATextField(
-        value = text,
-        onValueChange = { input ->
-            // Reject anything that is not a run of digits rather than accepting
-            // it and silently dropping the edit, so the field cannot drift from
-            // what is actually stored.
-            if (input.isEmpty() || input.all { it.isDigit() }) {
-                text = input
-                input.toIntOrNull()?.let(onChange)
-            }
-        },
-        label = label,
-        keyboardType = KeyboardType.Number,
-    )
-}
-
 /** `sk-abcdef…1234`: enough to tell two keys apart, not enough to be one. */
 internal fun maskSecret(value: String): String = when {
     value.length <= 10 -> value

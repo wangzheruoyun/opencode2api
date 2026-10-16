@@ -85,6 +85,30 @@ fun PaddedSection(content: @Composable () -> Unit) {
 }
 
 /**
+ * A number that is edited as text but stored as a number.
+ *
+ * The text is held locally so the field can be emptied while it is being
+ * retyped; committing on every keystroke would fight the user at the exact
+ * moment they are clearing it. Non-digits are refused rather than accepted and
+ * silently dropped, so what is on screen always matches what was stored.
+ */
+@Composable
+fun NumberField(label: String, value: Int, onChange: (Int) -> Unit) {
+    var text by remember(value) { mutableStateOf(value.toString()) }
+    O2ATextField(
+        value = text,
+        onValueChange = { input ->
+            if (input.isEmpty() || input.all { it.isDigit() }) {
+                text = input
+                input.toIntOrNull()?.let(onChange)
+            }
+        },
+        label = label,
+        keyboardType = KeyboardType.Number,
+    )
+}
+
+/**
  * One GET against the admin API, re-issued whenever [key] changes.
  *
  * The screens that poll do it by bumping [refresh] rather than by running their

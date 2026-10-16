@@ -23,8 +23,9 @@ concurrency:
 env:
   # Pinned so the gateway binary and the APK that carries it never drift apart.
   NDK_VERSION: "27.2.12479018"
-  COMPILE_SDK: "36"
-  BUILD_TOOLS: "36.0.0"
+  # miuix and material-kolor both require a consumer compiled against 37.
+  COMPILE_SDK: "37"
+  BUILD_TOOLS: "37.0.0"
 
 jobs:
   apk:
