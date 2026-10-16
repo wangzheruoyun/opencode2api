@@ -81,8 +81,8 @@ class AdminClient(context: Context) {
                 .build(),
             method = "POST",
         ).map { body ->
-            csrfToken = body["csrf_token"]?.jsonPrimitive?.contentOrNull()
-            username = body["username"]?.jsonPrimitive?.contentOrNull()
+            csrfToken = body["csrf_token"]?.jsonPrimitive?.contentOrNull
+            username = body["username"]?.jsonPrimitive?.contentOrNull
             authenticated = true
         }
 
@@ -90,8 +90,8 @@ class AdminClient(context: Context) {
     suspend fun session(baseUrl: String): Result<Unit> =
         execute(Request.Builder().url("$baseUrl/api/auth/session").get().build(), method = "GET")
             .map { body ->
-                username = body["username"]?.jsonPrimitive?.contentOrNull()
-                csrfToken = body["csrf_token"]?.jsonPrimitive?.contentOrNull()
+                username = body["username"]?.jsonPrimitive?.contentOrNull
+                csrfToken = body["csrf_token"]?.jsonPrimitive?.contentOrNull
                 authenticated = true
             }
 
@@ -156,7 +156,7 @@ class AdminClient(context: Context) {
             // Every admin endpoint reports failures as {"error":{code,message}};
             // surfacing the server's own message beats a bare status code.
             val message = parsed["error"]?.jsonObject
-                ?.get("message")?.jsonPrimitive?.contentOrNull()
+                ?.get("message")?.jsonPrimitive?.contentOrNull
                 ?: "HTTP ${response.code}"
             if (response.code == 401) {
                 authenticated = false

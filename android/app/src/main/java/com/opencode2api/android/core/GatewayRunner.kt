@@ -2,8 +2,6 @@ package com.opencode2api.android.core
 
 import android.content.Context
 import com.opencode2api.android.data.GatewayConfigStore
-import com.opencode2api.android.data.apiPort
-import com.opencode2api.android.data.webUiPort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

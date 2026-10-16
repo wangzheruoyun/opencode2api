@@ -53,8 +53,14 @@ fun JsonObject.num(path: String): Double? =
 fun JsonObject.long(path: String): Long =
     (element(path) as? JsonPrimitive)?.longOrNull ?: 0L
 
-fun JsonObject.int(path: String): Int =
-    (element(path) as? JsonPrimitive)?.intOrNull ?: 0
+/**
+ * A number, floored to an Int. [fallback] is what the caller gets for a field
+ * that is absent, null, or not a number at all — the config editor shows a
+ * default next to every numeric field, and reading those defaults back out of
+ * the document on every recomposition beat repeating them at each call site.
+ */
+fun JsonObject.int(path: String, fallback: Int = 0): Int =
+    (element(path) as? JsonPrimitive)?.intOrNull ?: fallback
 
 fun JsonObject.bool(path: String, fallback: Boolean = false): Boolean =
     (element(path) as? JsonPrimitive)?.booleanOrNull ?: fallback

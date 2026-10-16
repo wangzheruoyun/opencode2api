@@ -31,7 +31,7 @@ import com.opencode2api.android.ui.theme.ColorMode
  */
 @Composable
 fun MoreScreen(onNavigate: (Route) -> Unit) {
-    val settings by GatewayRuntime.settings.current.collectAsStateWithLifecycle()
+    val settings by GatewayRuntime.settings.state.collectAsStateWithLifecycle()
     val mode = ColorMode.fromValue(settings.themeMode)
 
     Column(

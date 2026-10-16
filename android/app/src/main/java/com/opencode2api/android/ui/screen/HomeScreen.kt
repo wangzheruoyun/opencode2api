@@ -54,7 +54,7 @@ fun HomeScreen(onNavigate: (Route) -> Unit) {
     val context = LocalContext.current
     val state by GatewayRuntime.runner.state.collectAsStateWithLifecycle()
     val resolved by GatewayRuntime.runner.resolvedMode.collectAsStateWithLifecycle()
-    val settings by GatewayRuntime.settings.current.collectAsStateWithLifecycle()
+    val settings by GatewayRuntime.settings.state.collectAsStateWithLifecycle()
     val revision by GatewayRuntime.logs.revision.collectAsStateWithLifecycle()
 
     val recentLogs = remember(revision) { GatewayRuntime.logs.snapshot().takeLast(8) }

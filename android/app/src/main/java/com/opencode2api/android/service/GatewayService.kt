@@ -155,7 +155,9 @@ class GatewayService : Service() {
             .setContentIntent(open)
             .addAction(0, getString(R.string.home_action_stop), stop)
             .setOngoing(true)
-            .setShowWhen(false, System.currentTimeMillis())
+            // No timestamp: the notification reports a running process, and a
+            // clock ticking next to it says nothing about when it started.
+            .setShowWhen(false)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .build()

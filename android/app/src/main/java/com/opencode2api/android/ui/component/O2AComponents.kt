@@ -130,13 +130,18 @@ fun O2ASwitchRow(
     else MaterialSwitchRow(title, checked, modifier, summary, enabled, onCheckedChange)
 }
 
+/**
+ * Every interactive component below puts its action lambda last, after
+ * [modifier], so a screen can write the action as a trailing lambda. That is
+ * the shape the screens are written in: `O2ATextButton("重置模板") { … }`.
+ */
 @Composable
 fun O2AButton(
     text: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     primary: Boolean = true,
+    onClick: () -> Unit,
 ) {
     if (isMiuix) MiuixButton(text, onClick, modifier, enabled, primary)
     else MaterialButton(text, onClick, modifier, enabled, primary)
@@ -146,9 +151,9 @@ fun O2AButton(
 @Composable
 fun O2ATextButton(
     text: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    onClick: () -> Unit,
 ) {
     if (isMiuix) MiuixTextButton(text, onClick, modifier, enabled)
     else MaterialTextButton(text, onClick, modifier, enabled)
@@ -268,8 +273,8 @@ fun O2ATag(text: String, modifier: Modifier = Modifier, highlight: Boolean = fal
 fun O2ASelectableChip(
     text: String,
     selected: Boolean,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit,
 ) {
     if (isMiuix) MiuixSelectableChip(text, selected, onClick, modifier)
     else MaterialSelectableChip(text, selected, onClick, modifier)

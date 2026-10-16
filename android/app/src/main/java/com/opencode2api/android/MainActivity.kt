@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         GatewayRuntime.attach(applicationContext)
 
         setContent {
-            val settings by GatewayRuntime.settings.current.collectAsStateWithLifecycle()
+            val settings by GatewayRuntime.settings.state.collectAsStateWithLifecycle()
             // The skin is a Compose local rather than a theme parameter so that
             // screens deep in the tree can read it without threading it down.
             CompositionLocalProvider(LocalUiMode provides UiMode.fromValue(settings.uiMode)) {
