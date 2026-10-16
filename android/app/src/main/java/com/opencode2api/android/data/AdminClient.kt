@@ -145,7 +145,7 @@ class AdminClient(context: Context) {
         }
 
     private fun parse(response: Response): JsonObject {
-        val text = response.body?.string().orEmpty()
+        val text = response.body.string()
         val parsed = if (text.isBlank()) {
             JsonObject(emptyMap())
         } else {

@@ -178,16 +178,30 @@ jobs:
           test -f "$apk" || { echo "::error::no debug APK was produced"; exit 1; }
 
           # extractNativeLibs=true is what gets the packaged gateway unpacked to
-          # a directory it can be exec'd from. It comes from
-          # packaging.jniLibs.useLegacyPackaging rather than from the source
-          # manifest, and an APK that quietly lost it would fail on the device
-          # and nowhere else, so read it back off the artifact.
-          "$ANDROID_HOME/build-tools/${BUILD_TOOLS}/aapt2" dump xmltree \
-            --file AndroidManifest.xml "$apk" |
-            grep -Eq 'extractNativeLibs.*(0xffffffff|"true")' || {
-              echo "::error::$apk does not extract native libraries; the gateway could not be executed"
-              exit 1
-            }
+          # a directory it can be exec'd from. AndroidStudio 3.6 and up ask for
+          # it via packaging.jniLibs.useLegacyPackaging and complain if it is
+          # also written into the source manifest, so the only way to know the
+          # build actually honoured it is to read the packaged APK back. An APK
+          # that quietly lost the attribute would build cleanly here and fail
+          # only on the device.
+          xmltree="$("$ANDROID_HOME/build-tools/${BUILD_TOOLS}/aapt2" \
+            dump xmltree "$apk" --file AndroidManifest.xml)"
+          # The dump is captured into a variable instead of being piped into
+          # `grep -q`. Under `set -o pipefail` the piped form is a trap: grep -q
+          # exits at its first match, aapt2 is still writing, and the SIGPIPE it
+          # takes turns a successful check into a 141. That is what a first run
+          # of this step reported.
+          if [[ -z "$xmltree" ]]; then
+            echo "::error::aapt2 could not read AndroidManifest.xml out of $apk"
+            exit 1
+          fi
+          if ! grep -Eq 'extractNativeLibs.*(0xffffffff|"true")' <<<"$xmltree"; then
+            echo "::error::$apk does not extract native libraries; the gateway could not be executed"
+            echo "--- application element as packaged ---"
+            grep -A12 -i 'E: application' <<<"$xmltree" | head -15
+            exit 1
+          fi
+          echo "$apk extracts native libraries"
 
           for abi in arm64-v8a x86_64; do
             entry="lib/${abi}/libopencode2api.so"

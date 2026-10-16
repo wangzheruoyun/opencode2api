@@ -266,11 +266,15 @@ fun PlaygroundScreen() {
                     }
 
                     catalog.data?.obj("last_inference") != null -> {
+                        // The branch condition already proved `data` is not
+                        // null, so the second lookup only needs the `?.` that
+                        // guards a missing key.
+                        val last = catalog.data.obj("last_inference")
                         O2AText(
                             "本次进程内最后一次追踪，来自之前的 Playground 请求。",
                             style = O2ATextStyle.Caption,
                         )
-                        O2AMonoBlock(catalog.data?.obj("last_inference")?.pretty().orEmpty(), maxLines = 30)
+                        O2AMonoBlock(last?.pretty().orEmpty(), maxLines = 30)
                     }
 
                     else -> {
