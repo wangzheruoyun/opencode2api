@@ -9,6 +9,11 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!-- miuix-blur declares a minSdk above our 26. It is inert below that level, and
+         every call site is behind isRenderEffectSupported(), so the merge is allowed
+         through. Nothing else in the miuix suite needs an entry here. -->
+    <uses-sdk tools:overrideLibrary="top.yukonga.miuix.kmp.blur" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
