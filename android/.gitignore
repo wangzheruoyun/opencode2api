@@ -1,0 +1,16 @@
+# Gradle and Android build output. None of this is ever built on a developer
+# machine here: the APK comes out of the "Android APK" workflow, which writes
+# its results to the run's artifacts rather than back into the tree.
+.gradle/
+build/
+app/build/
+local.properties
+.kotlin/
+captures/
+*.iml
+.idea/
+
+# The gateway binary is cross-compiled by the workflow into this directory so
+# Gradle packages it as a shared library. It is a build product of the Go
+# source, never a source file.
+app/src/main/jniLibs/

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenCode2API</string>
+
+    <!-- 底部导航 -->
+    <string name="nav_home">运行桌面</string>
+    <string name="nav_config">配置中心</string>
+    <string name="nav_logs">事件日志</string>
+    <string name="nav_models">模型与额度</string>
+    <string name="nav_more">更多</string>
+
+    <!-- 运行桌面 -->
+    <string name="home_title">运行桌面</string>
+    <string name="home_status_running">服务运行中</string>
+    <string name="home_status_stopped">服务已停止</string>
+    <string name="home_status_starting">正在启动…</string>
+    <string name="home_status_failed">启动失败</string>
+    <string name="home_action_start">启动</string>
+    <string name="home_action_stop">停止</string>
+    <string name="home_action_restart">重启</string>
+    <string name="home_action_reload">重载配置</string>
+    <string name="home_base_address">基础地址</string>
+    <string name="home_webui_address">管理界面</string>
+    <string name="home_uptime">运行时长</string>
+    <string name="home_requests">请求总数</string>
+    <string name="home_tokens">Token 用量</string>
+    <string name="home_copy">已复制到剪贴板</string>
+    <string name="home_run_mode">运行模式</string>
+    <string name="home_mode_root">Root</string>
+    <string name="home_mode_user">普通应用</string>
+    <string name="home_mode_auto">自动</string>
+
+    <!-- 配置中心 -->
+    <string name="config_title">配置中心</string>
+    <string name="config_section_service">服务与管理端</string>
+    <string name="config_section_keys">密钥与匿名通道</string>
+    <string name="config_section_upstream">上游与协议路由</string>
+    <string name="config_section_thinking">Thinking 强度</string>
+    <string name="config_section_perf">性能与日志</string>
+    <string name="config_listen">API 监听地址</string>
+    <string name="config_webui_enabled">启用管理界面</string>
+    <string name="config_webui_listen">管理界面监听地址</string>
+    <string name="config_zen_keys">OpenCode Zen 密钥</string>
+    <string name="config_go_keys">OpenCode Go 密钥</string>
+    <string name="config_server_keys">本机访问密钥</string>
+    <string name="config_anonymous">启用匿名通道</string>
+    <string name="config_proxies">Proxy 节点</string>
+    <string name="config_prefer">首选通道</string>
+    <string name="config_effort">Thinking 强度</string>
+    <string name="config_log_level">日志级别</string>
+    <string name="config_save">保存</string>
+    <string name="config_saved">配置已保存</string>
+    <string name="config_reload">重载</string>
+    <string name="config_add_key">添加密钥</string>
+    <string name="config_remove">删除</string>
+    <string name="config_edit">编辑</string>
+    <string name="config_cancel">取消</string>
+    <string name="config_confirm">确定</string>
+    <string name="config_empty">尚未配置</string>
+
+    <!-- 事件日志 -->
+    <string name="logs_title">事件日志</string>
+    <string name="logs_empty">暂无日志</string>
+    <string name="logs_clear">清空</string>
+    <string name="logs_pause">暂停</string>
+    <string name="logs_resume">继续</string>
+    <string name="logs_filter">级别筛选</string>
+
+    <!-- 设置 / 更多 -->
+    <string name="more_title">更多</string>
+    <string name="settings_title">设置</string>
+    <string name="settings_appearance">外观</string>
+    <string name="settings_ui_mode">界面风格</string>
+    <string name="settings_ui_mode_miuix">MIUIX</string>
+    <string name="settings_ui_mode_material">Material</string>
+    <string name="settings_theme_mode">主题模式</string>
+    <string name="settings_color_style">配色风格</string>
+    <string name="settings_key_color">主题色</string>
+    <string name="settings_monet">使用系统取色</string>
+    <string name="settings_behavior">行为</string>
+    <string name="settings_start_on_boot">开机自启</string>
+    <string name="settings_keep_alive">保持后台运行</string>
+    <string name="settings_run_mode">运行模式</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_version">版本</string>
+    <string name="settings_open_source">开源许可</string>
+</resources>

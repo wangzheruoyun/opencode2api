@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- config.json holds upstream API keys, so it never leaves the device. -->
+    <exclude domain="file" path="config.json" />
+    <exclude domain="file" path="config.json.bak" />
+</full-backup-content>

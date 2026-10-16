@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the seed colour the Compose theme falls back to before it
+         resolves a palette, so the launch window does not flash a third
+         colour on the way in. -->
+    <color name="splash_background">#FFF7F9FC</color>
+</resources>

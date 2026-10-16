@@ -1,0 +1,165 @@
+name: Android APK
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore:
+      - "**.md"
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version name to stamp into the APK, for example 1.0.0"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned so the gateway binary and the APK that carries it never drift apart.
+  NDK_VERSION: "27.2.12479018"
+  COMPILE_SDK: "36"
+  BUILD_TOOLS: "36.0.0"
+
+jobs:
+  apk:
+    name: Build APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK, platform and build tools
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager --install \
+            "ndk;${NDK_VERSION}" \
+            "platforms;android-${COMPILE_SDK}" \
+            "build-tools;${BUILD_TOOLS}"
+          echo "ANDROID_NDK_HOME=${ANDROID_HOME}/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [[ -n "$INPUT_VERSION" ]]; then
+            version="$INPUT_VERSION"
+          else
+            version="$(git describe --tags --always --dirty 2>/dev/null || echo 0.1.0)"
+            version="${version#v}"
+          fi
+          echo "name=$version" >> "$GITHUB_OUTPUT"
+          echo "code=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          echo "Building OpenCode2API Android $version (code ${{ github.run_number }})"
+
+      # The gateway is built with cgo against the NDK on purpose. A
+      # CGO_ENABLED=0 build links Go's own resolver, which reads
+      # /etc/resolv.conf -- a file Android does not provide, because name
+      # resolution goes through netd over Binder. Such a binary falls back to
+      # 127.0.0.1:53 and cannot resolve opencode.ai at all. Linking against
+      # bionic gives the process the platform resolver, and GOOS=android emits
+      # the PIE binary Android's loader expects.
+      - name: Build gateway for Android (arm64-v8a)
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.name }}
+        run: |
+          toolchain="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          mkdir -p android/app/src/main/jniLibs/arm64-v8a
+          CGO_ENABLED=1 \
+          GOOS=android \
+          GOARCH=arm64 \
+          CC="${toolchain}/aarch64-linux-android26-clang" \
+          go build -trimpath \
+            -ldflags="-s -w -X main.version=${VERSION}" \
+            -o android/app/src/main/jniLibs/arm64-v8a/libopencode2api.so \
+            ./cmd/opencode2api
+          file android/app/src/main/jniLibs/arm64-v8a/libopencode2api.so
+
+      - name: Build gateway for Android (x86_64)
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.name }}
+        run: |
+          toolchain="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          mkdir -p android/app/src/main/jniLibs/x86_64
+          CGO_ENABLED=1 \
+          GOOS=android \
+          GOARCH=amd64 \
+          CC="${toolchain}/x86_64-linux-android26-clang" \
+          go build -trimpath \
+            -ldflags="-s -w -X main.version=${VERSION}" \
+            -o android/app/src/main/jniLibs/x86_64/libopencode2api.so \
+            ./cmd/opencode2api
+          file android/app/src/main/jniLibs/x86_64/libopencode2api.so
+
+      - name: Verify the gateway is a PIE Android executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          for abi in arm64-v8a x86_64; do
+            so="android/app/src/main/jniLibs/${abi}/libopencode2api.so"
+            readelf -h "$so" | grep -q "Type:.*DYN" || {
+              echo "::error::$so is not position independent; Android's loader will refuse it"
+              exit 1
+            }
+            if readelf -d "$so" | grep -q "libgo"; then
+              echo "::error::$so unexpectedly links a Go runtime shared object"
+              exit 1
+            fi
+            echo "$so: $(du -h "$so" | cut -f1), $(readelf -d "$so" | grep -c NEEDED) shared deps"
+          done
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.7.1"
+
+      - name: Build debug APK
+        shell: bash
+        env:
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+          VERSION_CODE: ${{ steps.version.outputs.code }}
+        run: |
+          gradle -p android \
+            -PO2A_VERSION_NAME="${VERSION_NAME}" \
+            -PO2A_VERSION_CODE="${VERSION_CODE}" \
+            --no-daemon \
+            assembleDebug
+
+      - name: Report APK
+        shell: bash
+        run: |
+          find android/app/build/outputs/apk -name "*.apk" -exec ls -lh {} \;
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencode2api-android-${{ steps.version.outputs.name }}
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
