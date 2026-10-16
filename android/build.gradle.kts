@@ -11,8 +11,13 @@ extra["androidMinSdkVersion"] = 26
 // it, but still targeting 36: compiling newer and targeting older is the normal
 // split, and it keeps the app on the runtime behaviour these screens were
 // written for until there is a device to check a target bump on.
-extra["androidTargetSdkVersion"] = 36
+//
+// API 37 is published as minor releases -- android-37.0, 37.1, 37.2 -- with no
+// plain "android-37" platform to resolve against, so the minor has to be named
+// alongside the level or nothing matches.
 extra["androidCompileSdkVersion"] = 37
+extra["androidCompileSdkVersionMinor"] = 0
+extra["androidTargetSdkVersion"] = 36
 extra["androidBuildToolsVersion"] = "37.0.0"
 extra["androidSourceCompatibility"] = JavaVersion.VERSION_17
 extra["androidTargetCompatibility"] = JavaVersion.VERSION_17

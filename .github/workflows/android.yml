@@ -23,8 +23,10 @@ concurrency:
 env:
   # Pinned so the gateway binary and the APK that carries it never drift apart.
   NDK_VERSION: "27.2.12479018"
-  # miuix and material-kolor both require a consumer compiled against 37.
-  COMPILE_SDK: "37"
+  # miuix and material-kolor both require a consumer compiled against API 37,
+  # and Google publishes that level as minor releases -- there is no plain
+  # "platforms;android-37" package, only android-37.0 and up.
+  COMPILE_SDK_PLATFORM: "android-37.0"
   BUILD_TOOLS: "37.0.0"
 
 jobs:
@@ -73,7 +75,7 @@ jobs:
           yes | sdkmanager --licenses > /dev/null 2>&1 || true
           sdkmanager --install \
             "ndk;${NDK_VERSION}" \
-            "platforms;android-${COMPILE_SDK}" \
+            "platforms;${COMPILE_SDK_PLATFORM}" \
             "build-tools;${BUILD_TOOLS}"
           echo "ANDROID_NDK_HOME=${ANDROID_HOME}/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
 

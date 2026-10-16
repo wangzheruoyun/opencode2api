@@ -9,6 +9,7 @@ plugins {
 }
 
 val androidCompileSdkVersion = rootProject.extra["androidCompileSdkVersion"] as Int
+val androidCompileSdkVersionMinor = rootProject.extra["androidCompileSdkVersionMinor"] as Int
 val androidMinSdkVersion = rootProject.extra["androidMinSdkVersion"] as Int
 val androidTargetSdkVersion = rootProject.extra["androidTargetSdkVersion"] as Int
 val androidSourceCompatibility = rootProject.extra["androidSourceCompatibility"] as JavaVersion
@@ -20,7 +21,16 @@ val appVersionCode: Int = providers.gradleProperty("O2A_VERSION_CODE").getOrElse
 
 android {
     namespace = "com.opencode2api.android"
-    compileSdk = androidCompileSdkVersion
+
+    // Written as the release/minor form rather than the bare `compileSdk = 37`
+    // because API 37 has no plain platform package: AGP has to be told which
+    // minor release of the level to compile against.
+    compileSdk {
+        version =
+            release(androidCompileSdkVersion) {
+                minorApiLevel = androidCompileSdkVersionMinor
+            }
+    }
 
     defaultConfig {
         applicationId = "com.opencode2api.android"
