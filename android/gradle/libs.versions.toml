@@ -39,10 +39,14 @@ androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling
 # Icons come from miuix, which draws them at 24dp in the MIUI style. The
 # androidx material-icons-extended artifact is deprecated and no longer managed
 # by the Compose BOM, so it is deliberately not used here.
+#
+# Only these two miuix modules are listed, although the suite has more. Every
+# extra one is a library whose manifest constraints this app has to satisfy,
+# and miuix-blur in particular declares minSdk 33 against our 26 — it is a price
+# worth paying only by an app that actually blurs something. These screens do
+# not.
 miuix-ui = { module = "top.yukonga.miuix.kmp:miuix-ui-android", version.ref = "miuix" }
 miuix-icons = { module = "top.yukonga.miuix.kmp:miuix-icons-android", version.ref = "miuix" }
-miuix-preference = { module = "top.yukonga.miuix.kmp:miuix-preference-android", version.ref = "miuix" }
-miuix-blur = { module = "top.yukonga.miuix.kmp:miuix-blur-android", version.ref = "miuix" }
 
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 

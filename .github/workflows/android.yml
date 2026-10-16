@@ -170,6 +170,34 @@ jobs:
             --no-daemon \
             assembleDebug
 
+      - name: Verify the APK carries a runnable gateway
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$(find android/app/build/outputs/apk/debug -name '*.apk' -print -quit)"
+          test -f "$apk" || { echo "::error::no debug APK was produced"; exit 1; }
+
+          # extractNativeLibs=true is what gets the packaged gateway unpacked to
+          # a directory it can be exec'd from. It comes from
+          # packaging.jniLibs.useLegacyPackaging rather than from the source
+          # manifest, and an APK that quietly lost it would fail on the device
+          # and nowhere else, so read it back off the artifact.
+          "$ANDROID_HOME/build-tools/${BUILD_TOOLS}/aapt2" dump xmltree \
+            --file AndroidManifest.xml "$apk" |
+            grep -Eq 'extractNativeLibs.*(0xffffffff|"true")' || {
+              echo "::error::$apk does not extract native libraries; the gateway could not be executed"
+              exit 1
+            }
+
+          for abi in arm64-v8a x86_64; do
+            entry="lib/${abi}/libopencode2api.so"
+            unzip -l "$apk" "$entry" | grep -q "$entry" || {
+              echo "::error::$apk is missing $entry"
+              exit 1
+            }
+            echo "$apk carries $entry"
+          done
+
       - name: Report APK
         shell: bash
         run: |

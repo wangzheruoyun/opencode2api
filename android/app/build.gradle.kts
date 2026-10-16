@@ -64,10 +64,13 @@ android {
         }
     }
 
-    // useLegacyPackaging leaves android:extractNativeLibs="true" in the
-    // manifest, which is what makes the package manager unpack the bundled Go
-    // binary to disk instead of mapping it straight out of the APK. Without it
-    // the binary has no executable file to spawn.
+    // useLegacyPackaging is what makes the package manager unpack the bundled
+    // Go binary to disk with the executable bit set, instead of mapping it
+    // straight out of the APK, which would leave nothing to exec. It sets
+    // android:extractNativeLibs="true" in the merged manifest, and it is the
+    // only thing that does: writing the attribute into the source manifest as
+    // well earns a manifest-merger warning, so the APK is checked for it in CI
+    // rather than asserted in two places.
     packaging {
         jniLibs {
             useLegacyPackaging = true
@@ -124,8 +127,6 @@ dependencies {
 
     implementation(libs.miuix.ui)
     implementation(libs.miuix.icons)
-    implementation(libs.miuix.preference)
-    implementation(libs.miuix.blur)
 
     implementation(libs.material.kolor)
 
