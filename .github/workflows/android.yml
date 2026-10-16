@@ -186,16 +186,22 @@ jobs:
           # only on the device.
           xmltree="$("$ANDROID_HOME/build-tools/${BUILD_TOOLS}/aapt2" \
             dump xmltree "$apk" --file AndroidManifest.xml)"
-          # The dump is captured into a variable instead of being piped into
+          # The dump is captured into a variable rather than piped into
           # `grep -q`. Under `set -o pipefail` the piped form is a trap: grep -q
-          # exits at its first match, aapt2 is still writing, and the SIGPIPE it
-          # takes turns a successful check into a 141. That is what a first run
-          # of this step reported.
+          # exits at its first match while aapt2 is still writing, and the
+          # SIGPIPE it takes turns a successful check into a 141. Capturing
+          # also makes a dump that could not be read distinguishable from one
+          # that lacks the attribute, which is the difference between a broken
+          # APK and a broken check.
           if [[ -z "$xmltree" ]]; then
             echo "::error::aapt2 could not read AndroidManifest.xml out of $apk"
             exit 1
           fi
-          if ! grep -Eq 'extractNativeLibs.*(0xffffffff|"true")' <<<"$xmltree"; then
+          # aapt2 prints this attribute's value as the word `true`, not as the
+          # 0xffffffff a compiled boolean normally renders as, so the pattern
+          # accepts either spelling. Both were seen to matter: the first run of
+          # this step reported a missing attribute against an APK that had it.
+          if ! grep -Eq 'extractNativeLibs.*(=true|0xffffffff)' <<<"$xmltree"; then
             echo "::error::$apk does not extract native libraries; the gateway could not be executed"
             echo "--- application element as packaged ---"
             grep -A12 -i 'E: application' <<<"$xmltree" | head -15
@@ -205,10 +211,11 @@ jobs:
 
           for abi in arm64-v8a x86_64; do
             entry="lib/${abi}/libopencode2api.so"
-            unzip -l "$apk" "$entry" | grep -q "$entry" || {
+            listing="$(unzip -l "$apk" "$entry" || true)"
+            if ! grep -q "$entry" <<<"$listing"; then
               echo "::error::$apk is missing $entry"
               exit 1
-            }
+            fi
             echo "$apk carries $entry"
           done
 
